@@ -1,0 +1,23 @@
+# ambiente virtual
+backend/venv/
+venv/
+
+# variáveis sensíveis
+.env
+*.env
+
+# cache do Python
+__pycache__/
+*.pyc
+
+# banco de dados local
+instance/
+*.db
+
+# fotos enviadas pelos usuários
+backend/static/fotos/*
+!backend/static/fotos/.gitkeep
+
+# sistema
+.DS_Store
+Thumbs.db

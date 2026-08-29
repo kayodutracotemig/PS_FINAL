@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Stadium Guide</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+<div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+
+<div id="app">
+
+  <!-- ===== LOADING ===== -->
+  <section id="view-loading" class="view view-loading">
+    <div class="loading-mark">
+      <span class="loading-ring"></span>
+      <svg viewBox="0 0 24 24" class="loading-icon"><path d="M12 2 L14.5 8.5 L21.5 9 L16 13.5 L18 20.5 L12 16.5 L6 20.5 L8 13.5 L2.5 9 L9.5 8.5 Z"/></svg>
+    </div>
+    <p class="loading-label">carregando o estádio…</p>
+  </section>
+
+  <!-- ===== AUTH (LOGIN / CADASTRO) ===== -->
+  <section id="view-auth" class="view hidden">
+    <div class="auth-shell">
+      <div class="auth-brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 48 48" class="brand-crest"><path d="M24 4 L40 11 V22 C40 32 33 40 24 44 C15 40 8 32 8 22 V11 Z"/></svg>
+        </div>
+        <h1 class="brand-title">STADIUM<span>GUIDE</span></h1>
+        <p class="brand-sub">seu clube, seus jogos, seu ingresso</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab is-active" data-auth-tab="login" role="tab">Entrar</button>
+          <button class="auth-tab" data-auth-tab="cadastro" role="tab">Criar conta</button>
+        </div>
+
+        <form id="form-login" class="auth-form" novalidate>
+          <label class="field">
+            <span class="field-label">E-mail</span>
+            <input type="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Senha</span>
+            <div class="field-pass">
+              <input type="password" name="senha" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="pass-toggle" data-toggle-pass>ver</button>
+            </div>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">
+            <span class="btn-label">Entrar</span>
+            <span class="btn-spinner" hidden></span>
+          </button>
+        </form>
+
+        <form id="form-cadastro" class="auth-form hidden" novalidate>
+          <label class="field">
+            <span class="field-label">Nome</span>
+            <input type="text" name="nome" placeholder="Como podemos te chamar" autocomplete="name" required>
+          </label>
+          <label class="field">
+            <span class="field-label">E-mail</span>
+            <input type="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Senha</span>
+            <div class="field-pass">
+              <input type="password" name="senha" placeholder="crie uma senha" autocomplete="new-password" minlength="4" required>
+              <button type="button" class="pass-toggle" data-toggle-pass>ver</button>
+            </div>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">
+            <span class="btn-label">Criar conta</span>
+            <span class="btn-spinner" hidden></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SELEÇÃO DE TIME ===== -->
+  <section id="view-team-select" class="view hidden">
+    <div class="select-shell">
+      <p class="eyebrow">antes de entrar em campo</p>
+      <h2 class="select-title">Para qual time você torce?</h2>
+      <p class="select-sub">isso define seus próximos jogos e o ingresso certo pra você</p>
+      <div id="team-grid" class="team-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== DASHBOARD ===== -->
+  <section id="view-dashboard" class="view hidden">
+
+    <header class="app-header">
+      <div class="header-identity">
+        <button id="avatar-btn" class="avatar avatar-sm" type="button" aria-label="Abrir perfil">
+          <img id="avatar-img" src="" alt="" hidden>
+          <svg id="avatar-fallback" viewBox="0 0 24 24" class="avatar-fallback-icon"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
+        </button>
+        <div class="header-text">
+          <span class="header-hello">e aí,</span>
+          <span id="header-name" class="header-name">torcedor</span>
+        </div>
+      </div>
+      <div class="header-team">
+        <span id="header-team-badge" class="badge-mini">--</span>
+        <span id="header-team-name" class="header-team-name">Selecionando…</span>
+      </div>
+    </header>
+
+    <main class="app-main">
+
+      <!-- INÍCIO -->
+      <div id="tab-inicio" class="tab-panel">
+        <p class="eyebrow">próximo compromisso</p>
+
+        <div id="scoreboard" class="scoreboard scoreboard-empty">
+          <div class="scoreboard-top">
+            <span id="score-campeonato" class="score-chip">—</span>
+            <span id="score-local" class="score-chip score-chip-ghost">—</span>
+          </div>
+          <div class="scoreboard-mid">
+            <div class="score-team">
+              <span id="score-team-mine" class="score-team-name">seu time</span>
+            </div>
+            <span class="score-vs">×</span>
+            <div class="score-team">
+              <span id="score-team-rival" class="score-team-name">adversário</span>
+            </div>
+          </div>
+          <div class="scoreboard-bottom">
+            <div class="score-detail">
+              <svg viewBox="0 0 24 24"><path d="M7 3v2M17 3v2M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg>
+              <span id="score-data">--/--/----</span>
+            </div>
+            <div class="score-detail">
+              <svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              <span id="score-hora">--:--</span>
+            </div>
+            <div class="score-detail">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.5-9.3 9-9.3 9Z"/></svg>
+              <span id="score-estadio">—</span>
+            </div>
+          </div>
+          <div class="scoreboard-countdown">
+            <div class="count-box"><span id="cd-dias">00</span><small>dias</small></div>
+            <div class="count-box"><span id="cd-horas">00</span><small>hrs</small></div>
+            <div class="count-box"><span id="cd-min">00</span><small>min</small></div>
+          </div>
+        </div>
+
+        <div class="section-heading">
+          <p class="eyebrow eyebrow-tight">na sequência</p>
+          <button class="link-btn" data-nav="jogos">ver todos</button>
+        </div>
+        <div id="preview-jogos" class="games-list games-list-compact"></div>
+      </div>
+
+      <!-- JOGOS -->
+      <div id="tab-jogos" class="tab-panel hidden">
+        <p class="eyebrow">próximos jogos</p>
+        <h2 class="tab-title">Calendário do seu time</h2>
+        <div id="lista-jogos" class="games-list"></div>
+      </div>
+
+      <!-- INGRESSOS -->
+      <div id="tab-ingressos" class="tab-panel hidden">
+        <p class="eyebrow">bilheteria</p>
+        <h2 class="tab-title">Garanta seu lugar na arquibancada</h2>
+        <div class="ticket-card">
+          <svg viewBox="0 0 24 24" class="ticket-icon"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3Z"/><path d="M9 7v10" stroke-dasharray="3 3"/></svg>
+          <p class="ticket-text">O link oficial de venda é liberado de acordo com o time que você escolheu no seu perfil.</p>
+          <button id="btn-comprar-ingresso" class="btn btn-primary btn-block" type="button">
+            <span class="btn-label">Comprar ingresso</span>
+            <span class="btn-spinner" hidden></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERFIL -->
+      <div id="tab-perfil" class="tab-panel hidden">
+        <p class="eyebrow">minha conta</p>
+
+        <div class="profile-card">
+          <label class="avatar avatar-lg avatar-editable" for="input-foto">
+            <img id="profile-avatar-img" src="" alt="" hidden>
+            <svg id="profile-avatar-fallback" viewBox="0 0 24 24" class="avatar-fallback-icon"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
+            <span class="avatar-edit-hint">
+              <svg viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.2"/></svg>
+            </span>
+          </label>
+          <input id="input-foto" type="file" accept=".png,.jpg,.jpeg" hidden>
+          <div class="profile-id">
+            <span id="profile-nome" class="profile-nome">—</span>
+            <span id="profile-email" class="profile-email">—</span>
+          </div>
+        </div>
+
+        <div class="settings-block">
+          <h3 class="settings-title">Meu time</h3>
+          <div class="current-team-row">
+            <span id="current-team-badge" class="badge-mini">--</span>
+            <span id="current-team-name">—</span>
+          </div>
+          <div id="switch-team-list" class="switch-team-list"></div>
+        </div>
+
+        <div class="settings-block">
+          <h3 class="settings-title">Endereço</h3>
+          <form id="form-endereco" class="stack-form" novalidate>
+            <div class="field-row">
+              <label class="field field-grow">
+                <span class="field-label">Rua</span>
+                <input type="text" name="rua" placeholder="Nome da rua" required>
+              </label>
+              <label class="field field-small">
+                <span class="field-label">Número</span>
+                <input type="text" name="numero" placeholder="Nº">
+              </label>
+            </div>
+            <div class="field-row">
+              <label class="field field-grow">
+                <span class="field-label">Bairro</span>
+                <input type="text" name="bairro" placeholder="Bairro">
+              </label>
+            </div>
+            <div class="field-row">
+              <label class="field field-grow">
+                <span class="field-label">Cidade</span>
+                <input type="text" name="cidade" placeholder="Cidade" required>
+              </label>
+              <label class="field field-small">
+                <span class="field-label">UF</span>
+                <select name="estado" required>
+                  <option value="">--</option>
+                  <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+                  <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                  <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                  <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+                  <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+                  <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                  <option>SP</option><option>SE</option><option>TO</option>
+                </select>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-block">
+              <span class="btn-label">Salvar endereço</span>
+              <span class="btn-spinner" hidden></span>
+            </button>
+          </form>
+        </div>
+
+        <button id="btn-logout" class="btn btn-ghost btn-block" type="button">
+          <svg viewBox="0 0 24 24"><path d="M15 17l5-5-5-5M20 12H9M12 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></svg>
+          <span>Sair da conta</span>
+        </button>
+      </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item is-active" data-nav="inicio" type="button">
+        <svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9"/></svg>
+        <span>Início</span>
+      </button>
+      <button class="nav-item" data-nav="jogos" type="button">
+        <svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg>
+        <span>Jogos</span>
+      </button>
+      <button class="nav-item" data-nav="ingressos" type="button">
+        <svg viewBox="0 0 24 24"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3Z"/></svg>
+        <span>Ingressos</span>
+      </button>
+      <button class="nav-item" data-nav="perfil" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
+        <span>Perfil</span>
+      </button>
+    </nav>
+  </section>
+
+</div>
+
+<!-- ===== MODAL DE CONFIRMAÇÃO (mudar de time) ===== -->
+<div id="modal-backdrop" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <h3 id="modal-title" class="modal-title">Trocar de time?</h3>
+    <p id="modal-text" class="modal-text">Você vai passar a ver jogos e ingressos do novo time.</p>
+    <div class="modal-actions">
+      <button id="modal-cancel" class="btn btn-ghost" type="button">Cancelar</button>
+      <button id="modal-confirm" class="btn btn-primary" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
