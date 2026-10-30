@@ -11,16 +11,19 @@ class ProximosJogosService:
         if not usuario.time_id:
             raise ValueError('Você precisa selecionar um time antes de ver os jogos.')
 
-        jogos = Jogo.listar_proximos_por_time(usuario.time_id, limite=5)
+        jogos = Jogo.listar_proximos_por_time(usuario.time_id, limite=10)
 
         resultado = []
         for jogo in jogos:
             resultado.append({
+                'id': jogo.id,
                 'adversario': jogo.adversario,
-                'data_hora': jogo.data_hora.strftime('%d/%m/%Y %H:%M'),
+                'data_hora': jogo.data_hora.isoformat(),
                 'local': jogo.local,
                 'estadio': jogo.estadio,
-                'campeonato': jogo.campeonato
+                'campeonato': jogo.campeonato,
+                'fase': jogo.fase
             })
 
-        return resultado
+
+        return resultado

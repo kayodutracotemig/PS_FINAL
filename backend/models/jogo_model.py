@@ -11,6 +11,8 @@ class Jogo(db.Model):
     local = db.Column(db.String(10), nullable=False)
     estadio = db.Column(db.String(150), nullable=True)
     campeonato = db.Column(db.String(100), nullable=True)
+    fase = db.Column(db.String(80), nullable=True)
+    football_data_match_id = db.Column(db.Integer, unique=True, nullable=True)
 
     def salvar(self):
         db.session.add(self)
@@ -23,3 +25,11 @@ class Jogo(db.Model):
             Jogo.time_id == time_id,
             Jogo.data_hora >= agora
         ).order_by(Jogo.data_hora.asc()).limit(limite).all()
+
+    @staticmethod
+    def listar_passados_por_time(time_id, limite=10):
+        agora = datetime.now()
+        return Jogo.query.filter(
+            Jogo.time_id == time_id,
+            Jogo.data_hora < agora
+        ).order_by(Jogo.data_hora.desc()).limit(limite).all()

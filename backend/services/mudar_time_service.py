@@ -22,4 +22,4 @@ class MudarTimeService:
         usuario.time_id = novo_time.id
         usuario.atualizar()
 
-        return usuario, novo_time
+        return usuario, novo_time

@@ -16,4 +16,4 @@ class SelecionarTimeService:
         usuario.time_id = time.id
         usuario.atualizar()
 
-        return usuario, time
+        return usuario, time

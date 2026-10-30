@@ -15,7 +15,7 @@ def listar_times():
 
 @time_bp.route('/times/selecionar', methods=['POST'])
 def selecionar_time():
-    dados = request.get_json()
+    dados = request.get_json(silent=True) or {}
     token = dados.get('token')
     time_id = dados.get('time_id')
 
@@ -37,7 +37,7 @@ def selecionar_time():
 
 @time_bp.route('/times/mudar', methods=['PUT'])
 def mudar_time():
-    dados = request.get_json()
+    dados = request.get_json(silent=True) or {}
     token = dados.get('token')
     novo_time_id = dados.get('time_id')
 
@@ -54,4 +54,4 @@ def mudar_time():
             'time_nome': time.nome
         }), 200
     except ValueError as erro:
-        return jsonify({'erro': str(erro)}), 400
+        return jsonify({'erro': str(erro)}), 400

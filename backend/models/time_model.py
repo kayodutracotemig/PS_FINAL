@@ -16,4 +16,4 @@ class Time(db.Model):
 
     @staticmethod
     def buscar_por_id(time_id):
-        return Time.query.get(time_id)
+        return Time.query.get(time_id)

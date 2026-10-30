@@ -10,4 +10,4 @@ class LogoutService:
         usuario.token = None
         usuario.atualizar()
 
-        return usuario
+        return usuario

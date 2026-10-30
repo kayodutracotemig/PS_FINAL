@@ -15,4 +15,4 @@ class LoginService:
         usuario.token = secrets.token_hex(16)
         usuario.atualizar()
 
-        return usuario
+        return usuario

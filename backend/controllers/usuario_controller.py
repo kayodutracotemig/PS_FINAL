@@ -8,7 +8,7 @@ usuario_bp = Blueprint('usuario', __name__)
 
 @usuario_bp.route('/usuarios/cadastro', methods=['POST'])
 def cadastrar():
-    dados = request.get_json()
+    dados = request.get_json(silent=True) or {}
 
     nome = dados.get('nome')
     email = dados.get('email')
@@ -32,7 +32,7 @@ def cadastrar():
 
 @usuario_bp.route('/usuarios/login', methods=['POST'])
 def login():
-    dados = request.get_json()
+    dados = request.get_json(silent=True) or {}
 
     email = dados.get('email')
     senha = dados.get('senha')
@@ -56,7 +56,7 @@ def login():
 
 @usuario_bp.route('/usuarios/logout', methods=['POST'])
 def logout():
-    dados = request.get_json()
+    dados = request.get_json(silent=True) or {}
     token = dados.get('token')
 
     if not token:
@@ -67,4 +67,4 @@ def logout():
         service.executar(token)
         return jsonify({'mensagem': 'Logout realizado com sucesso!'}), 200
     except ValueError as erro:
-        return jsonify({'erro': str(erro)}), 401
+        return jsonify({'erro': str(erro)}), 401

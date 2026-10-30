@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Stadium Guide</title>
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/png" sizes="256x256" href="img/favicon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -45,16 +46,16 @@
         <form id="form-login" class="auth-form" novalidate>
           <label class="field">
             <span class="field-label">E-mail</span>
-            <input type="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+            <input type="email" id="login-email" name="email" placeholder="voce@email.com" required>
           </label>
           <label class="field">
             <span class="field-label">Senha</span>
             <div class="field-pass">
-              <input type="password" name="senha" placeholder="••••••••" autocomplete="current-password" required>
+              <input type="password" id="login-senha" name="senha" placeholder="••••••••" required>
               <button type="button" class="pass-toggle" data-toggle-pass>ver</button>
             </div>
           </label>
-          <button type="submit" class="btn btn-primary btn-block">
+          <button id="btn-do-login" type="submit" class="btn btn-primary btn-block">
             <span class="btn-label">Entrar</span>
             <span class="btn-spinner" hidden></span>
           </button>
@@ -63,20 +64,20 @@
         <form id="form-cadastro" class="auth-form hidden" novalidate>
           <label class="field">
             <span class="field-label">Nome</span>
-            <input type="text" name="nome" placeholder="Como podemos te chamar" autocomplete="name" required>
+            <input type="text" id="cad-nome" name="nome" placeholder="Como podemos te chamar" required>
           </label>
           <label class="field">
             <span class="field-label">E-mail</span>
-            <input type="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+            <input type="email" id="cad-email" name="email" placeholder="voce@email.com" required>
           </label>
           <label class="field">
             <span class="field-label">Senha</span>
             <div class="field-pass">
-              <input type="password" name="senha" placeholder="crie uma senha" autocomplete="new-password" minlength="4" required>
+              <input type="password" id="cad-senha" name="senha" placeholder="crie uma senha" minlength="4" required>
               <button type="button" class="pass-toggle" data-toggle-pass>ver</button>
             </div>
           </label>
-          <button type="submit" class="btn btn-primary btn-block">
+          <button id="btn-do-cadastro" type="submit" class="btn btn-primary btn-block">
             <span class="btn-label">Criar conta</span>
             <span class="btn-spinner" hidden></span>
           </button>
@@ -97,11 +98,10 @@
 
   <!-- ===== DASHBOARD ===== -->
   <section id="view-dashboard" class="view hidden">
-
     <header class="app-header">
       <div class="header-identity">
         <button id="avatar-btn" class="avatar avatar-sm" type="button" aria-label="Abrir perfil">
-          <img id="avatar-img" src="" alt="" hidden>
+          <img id="avatar-img" alt="" hidden>
           <svg id="avatar-fallback" viewBox="0 0 24 24" class="avatar-fallback-icon"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
         </button>
         <div class="header-text">
@@ -112,42 +112,29 @@
       <div class="header-team">
         <span id="header-team-badge" class="badge-mini">--</span>
         <span id="header-team-name" class="header-team-name">Selecionando…</span>
+        <button id="btn-theme-toggle" class="btn-ghost" style="background:none; border:none; cursor:pointer; margin-left:10px;" title="Alternar Tema">
+          <svg id="theme-icon" viewBox="0 0 24 24" style="width:20px; height:20px; color:var(--text-muted)"><path d="M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Z"/><path d="M12 12a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
+        </button>
       </div>
     </header>
 
     <main class="app-main">
-
-      <!-- INÍCIO -->
       <div id="tab-inicio" class="tab-panel">
         <p class="eyebrow">próximo compromisso</p>
-
         <div id="scoreboard" class="scoreboard scoreboard-empty">
           <div class="scoreboard-top">
             <span id="score-campeonato" class="score-chip">—</span>
             <span id="score-local" class="score-chip score-chip-ghost">—</span>
           </div>
           <div class="scoreboard-mid">
-            <div class="score-team">
-              <span id="score-team-mine" class="score-team-name">seu time</span>
-            </div>
+            <div class="score-team"><span id="score-team-mine" class="score-team-name">seu time</span></div>
             <span class="score-vs">×</span>
-            <div class="score-team">
-              <span id="score-team-rival" class="score-team-name">adversário</span>
-            </div>
+            <div class="score-team"><span id="score-team-rival" class="score-team-name">adversário</span></div>
           </div>
           <div class="scoreboard-bottom">
-            <div class="score-detail">
-              <svg viewBox="0 0 24 24"><path d="M7 3v2M17 3v2M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg>
-              <span id="score-data">--/--/----</span>
-            </div>
-            <div class="score-detail">
-              <svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-              <span id="score-hora">--:--</span>
-            </div>
-            <div class="score-detail">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.5-9.3 9-9.3 9Z"/></svg>
-              <span id="score-estadio">—</span>
-            </div>
+            <div class="score-detail"><svg viewBox="0 0 24 24"><path d="M7 3v2M17 3v2M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg><span id="score-data">--/--/----</span></div>
+            <div class="score-detail"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg><span id="score-hora">--:--</span></div>
+            <div class="score-detail"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.5-9.3 9-9.3 9Z"/></svg><span id="score-estadio">—</span></div>
           </div>
           <div class="scoreboard-countdown">
             <div class="count-box"><span id="cd-dias">00</span><small>dias</small></div>
@@ -156,41 +143,85 @@
           </div>
         </div>
 
-        <div class="section-heading">
-          <p class="eyebrow eyebrow-tight">na sequência</p>
-          <button class="link-btn" data-nav="jogos">ver todos</button>
+        <div id="ocupacao-home-container" class="settings-block">
+            <h3 class="settings-title">Previsão de Ocupação</h3>
+            <div id="ocupacao-home-stats" class="tab-title" style="font-size: 16px; margin-bottom: 10px;">Carregando previsão...</div>
+            <div id="ocupacao-home-mapa3d" class="mapa-isometrico"></div>
+            <div id="ocupacao-home-grid" class="mapa-calor"></div>
+            <p id="ocupacao-home-aviso-setores" class="ocupacao-aviso-setores"></p>
+            <div id="ocupacao-home-detalhes" class="ocupacao-detalhes-grid">
+                <div class="detalhe-item">
+                    <span class="detalhe-label">🚩 Setores de referência das organizadas:</span>
+                    <div id="detalhe-organizada" class="organizacoes-referencias">—</div>
+                </div>
+                <div class="detalhe-item">
+                    <span class="detalhe-label">✅ Recomendado:</span>
+                    <span id="detalhe-recomendado">—</span>
+                </div>
+            </div>
         </div>
-        <div id="preview-jogos" class="games-list games-list-compact"></div>
-      </div>
 
-      <!-- JOGOS -->
-      <div id="tab-jogos" class="tab-panel hidden">
-        <p class="eyebrow">próximos jogos</p>
-        <h2 class="tab-title">Calendário do seu time</h2>
-        <div id="lista-jogos" class="games-list"></div>
-      </div>
-
-      <!-- INGRESSOS -->
-      <div id="tab-ingressos" class="tab-panel hidden">
-        <p class="eyebrow">bilheteria</p>
-        <h2 class="tab-title">Garanta seu lugar na arquibancada</h2>
-        <div class="ticket-card">
-          <svg viewBox="0 0 24 24" class="ticket-icon"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3Z"/><path d="M9 7v10" stroke-dasharray="3 3"/></svg>
-          <p class="ticket-text">O link oficial de venda é liberado de acordo com o time que você escolheu no seu perfil.</p>
-          <button id="btn-comprar-ingresso" class="btn btn-primary btn-block" type="button">
-            <span class="btn-label">Comprar ingresso</span>
+        <button id="btn-comprar-ingresso" class="btn btn-primary btn-block" type="button">
+            <span class="btn-label">Comprar Ingresso para este Jogo</span>
             <span class="btn-spinner" hidden></span>
-          </button>
+        </button>
+      </div>
+
+      <div id="tab-jogos" class="tab-panel hidden">
+        <p class="eyebrow">calendário</p>
+        <h2 class="tab-title">Jogos do seu time</h2>
+        <div class="jogos-subtabs">
+          <button class="jogos-subtab is-active" data-jogos-sub="casa" type="button">Em Casa</button>
+          <button class="jogos-subtab" data-jogos-sub="fora" type="button">Fora</button>
+          <button class="jogos-subtab" data-jogos-sub="passados" type="button">Antigos</button>
+        </div>
+        <div id="lista-jogos" class="games-list"></div>
+        <div id="detalhe-jogo-ocupacao" class="settings-block hidden">
+            <h3 class="settings-title">Previsão de Ocupação</h3>
+            <div id="ocupacao-jogo-stats" class="tab-title" style="font-size: 16px; margin-bottom: 10px;">Carregando...</div>
+            <div id="ocupacao-jogo-mapa3d" class="mapa-isometrico"></div>
+            <div id="ocupacao-jogo-grid" class="mapa-calor"></div>
+            <p id="ocupacao-jogo-aviso-setores" class="ocupacao-aviso-setores"></p>
+            <div id="ocupacao-jogo-detalhes" class="ocupacao-detalhes-grid">
+                <div class="detalhe-item">
+                    <span class="detalhe-label">🚩 Setores de referência das organizadas:</span>
+                    <div id="detalhe-jogo-organizada" class="organizacoes-referencias">—</div>
+                </div>
+                <div class="detalhe-item">
+                    <span class="detalhe-label">✅ Recomendado:</span>
+                    <span id="detalhe-jogo-recomendado">—</span>
+                </div>
+            </div>
         </div>
       </div>
 
-      <!-- PERFIL -->
+      <div id="tab-localizacao" class="tab-panel hidden">
+        <p class="eyebrow">como chegar</p>
+        <h2 class="tab-title">Sua jornada até o estádio</h2>
+        <div id="estadio-banner" class="estadio-banner">
+            <img id="img-estadio-banner" alt="Foto do Estádio" class="banner-img">
+        </div>
+        <div id="rota-block" class="rota-block">
+                <div class="rota-modos">
+                  <button class="rota-modo is-active" data-modo="driving" type="button">Carro</button>
+                  <button class="rota-modo" data-modo="transit" type="button">Ônibus/Metrô</button>
+                  <button class="rota-modo" data-modo="ride" type="button">Uber/99</button>
+                </div>
+                <button id="btn-como-chegar" class="btn btn-ghost" type="button" style="width:100%">
+                  <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.5-9.3 9-9.3 9Z"/></svg>
+                  <span class="btn-label">Calcular Melhor Rota</span>
+                  <span class="btn-spinner" hidden></span>
+                </button>
+                <div id="rota-resultado" class="rota-resultado hidden"></div>
+                <div id="rota-mapa" class="rota-mapa hidden"></div>
+        </div>
+      </div>
+
       <div id="tab-perfil" class="tab-panel hidden">
         <p class="eyebrow">minha conta</p>
-
         <div class="profile-card">
           <label class="avatar avatar-lg avatar-editable" for="input-foto">
-            <img id="profile-avatar-img" src="" alt="" hidden>
+            <img id="profile-avatar-img" alt="" hidden>
             <svg id="profile-avatar-fallback" viewBox="0 0 24 24" class="avatar-fallback-icon"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
             <span class="avatar-edit-hint">
               <svg viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.2"/></svg>
@@ -202,7 +233,6 @@
             <span id="profile-email" class="profile-email">—</span>
           </div>
         </div>
-
         <div class="settings-block">
           <h3 class="settings-title">Meu time</h3>
           <div class="current-team-row">
@@ -211,7 +241,14 @@
           </div>
           <div id="switch-team-list" class="switch-team-list"></div>
         </div>
-
+        <div class="settings-block">
+          <h3 class="settings-title">Jogos favoritados</h3>
+          <div id="perfil-favoritos" class="perfil-mini-list"></div>
+        </div>
+        <div class="settings-block">
+          <h3 class="settings-title">Minhas avaliações</h3>
+          <div id="perfil-avaliacoes" class="perfil-mini-list"></div>
+        </div>
         <div class="settings-block">
           <h3 class="settings-title">Endereço</h3>
           <form id="form-endereco" class="stack-form" novalidate>
@@ -256,13 +293,11 @@
             </button>
           </form>
         </div>
-
         <button id="btn-logout" class="btn btn-ghost btn-block" type="button">
           <svg viewBox="0 0 24 24"><path d="M15 17l5-5-5-5M20 12H9M12 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></svg>
           <span>Sair da conta</span>
         </button>
       </div>
-
     </main>
 
     <nav class="bottom-nav">
@@ -274,9 +309,9 @@
         <svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg>
         <span>Jogos</span>
       </button>
-      <button class="nav-item" data-nav="ingressos" type="button">
-        <svg viewBox="0 0 24 24"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3Z"/></svg>
-        <span>Ingressos</span>
+      <button class="nav-item" data-nav="localizacao" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.5-9.3 9-9.3 9Z"/></svg>
+        <span>Localização</span>
       </button>
       <button class="nav-item" data-nav="perfil" type="button">
         <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
@@ -284,10 +319,8 @@
       </button>
     </nav>
   </section>
-
 </div>
 
-<!-- ===== MODAL DE CONFIRMAÇÃO (mudar de time) ===== -->
 <div id="modal-backdrop" class="modal-backdrop hidden">
   <div class="modal-card">
     <h3 id="modal-title" class="modal-title">Trocar de time?</h3>
@@ -298,7 +331,25 @@
     </div>
   </div>
 </div>
-
+<div id="modal-avaliacao-backdrop" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <h3 class="modal-title">Como foi o jogo?</h3>
+    <p id="avaliacao-jogo-nome" class="modal-text">—</p>
+    <div id="rating-stars" class="rating-stars"></div>
+    <label class="field">
+      <span class="field-label">Comentário (opcional)</span>
+      <textarea id="avaliacao-comentario" rows="3" placeholder="O que achou da experiência?"></textarea>
+    </label>
+    <div class="modal-actions">
+      <button id="avaliacao-cancel" class="btn btn-ghost" type="button">Cancelar</button>
+      <button id="avaliacao-confirm" class="btn btn-primary" type="button">
+        <span class="btn-label">Enviar</span>
+        <span class="btn-spinner" hidden></span>
+      </button>
+    </div>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/app.js"></script>
 </body>
-</html>
+</html>

@@ -21,3 +21,7 @@ backend/static/fotos/*
 # sistema
 .DS_Store
 Thumbs.db
+
+readme.md
+
+correcoes.md

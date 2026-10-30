@@ -1,5 +1,6 @@
 import os
 import uuid
+from flask import current_app
 from models.usuario_model import Usuario
 
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg'}
@@ -19,7 +20,9 @@ class AtualizarFotoService:
             raise ValueError('Formato de imagem inválido. Use PNG ou JPG.')
 
         nome_arquivo = f'{uuid.uuid4().hex}.{extensao}'
-        caminho_pasta = os.path.join('static', 'fotos')
+        # root_path = pasta do app.py, não importa de onde você rodou o comando
+        caminho_pasta = os.path.join(current_app.root_path, 'static', 'fotos')
+        os.makedirs(caminho_pasta, exist_ok=True)  # cria se não existir
         caminho_completo = os.path.join(caminho_pasta, nome_arquivo)
 
         arquivo.save(caminho_completo)
@@ -27,4 +30,4 @@ class AtualizarFotoService:
         usuario.foto = f'/static/fotos/{nome_arquivo}'
         usuario.atualizar()
 
-        return usuario
+        return usuario

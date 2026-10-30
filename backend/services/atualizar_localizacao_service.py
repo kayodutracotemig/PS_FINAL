@@ -18,4 +18,4 @@ class AtualizarLocalizacaoService:
 
         usuario.atualizar()
 
-        return usuario
+        return usuario

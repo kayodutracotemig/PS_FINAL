@@ -12,4 +12,4 @@ class BuscarPerfilService:
         if usuario.time_id:
             time = Time.buscar_por_id(usuario.time_id)
 
-        return usuario, time
+        return usuario, time

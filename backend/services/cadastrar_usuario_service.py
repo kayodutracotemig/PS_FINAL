@@ -16,4 +16,4 @@ class CadastrarUsuarioService:
         )
         novo_usuario.salvar()
 
-        return novo_usuario
+        return novo_usuario

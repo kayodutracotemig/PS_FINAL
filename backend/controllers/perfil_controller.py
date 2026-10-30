@@ -36,7 +36,7 @@ def ver_perfil():
 
 @perfil_bp.route('/perfil/localizacao', methods=['PUT'])
 def atualizar_localizacao():
-    dados = request.get_json()
+    dados = request.get_json(silent=True) or {}
     token = dados.get('token')
     rua = dados.get('rua')
     numero = dados.get('numero')
@@ -80,4 +80,4 @@ def atualizar_foto():
             'foto': usuario.foto
         }), 200
     except ValueError as erro:
-        return jsonify({'erro': str(erro)}), 400
+        return jsonify({'erro': str(erro)}), 400

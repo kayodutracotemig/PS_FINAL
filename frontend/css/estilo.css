@@ -4,6 +4,43 @@
    ========================================================= */
 
 :root{
+  /* Tema Claro (Default) */
+  --bg:            #f8f9fa;
+  --bg-soft:       #f1f3f5;
+  --surface:       #ffffff;
+  --surface-2:     #e9ecef;
+  --surface-3:     #dee2e6;
+  --border:        #dee2e674;
+  --border-solid:  #ced4da;
+
+  --yellow:        #e6b800;
+  --yellow-strong: #ffd75e;
+  --yellow-dim:    #b98f1d;
+  --yellow-glow:   rgba(230, 184, 0, .1);
+  --yellow-glow-soft: rgba(230, 184, 0, .05);
+
+  --text:          #212529;
+  --text-muted:    #6c757d;
+  --text-faint:    #adb5bd;
+  --on-yellow:     #343a40;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-lift: 0 10px 30px -10px rgba(0,0,0,.1);
+  --shadow-tight: 0 4px 12px -4px rgba(0,0,0,.1);
+
+  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
+
+  color-scheme: light;
+}
+
+[data-theme='dark']{
+  /* Tema Escuro */
   --bg:            #101116;
   --bg-soft:       #16171f;
   --surface:       #1c1e27;
@@ -23,19 +60,44 @@
   --text-faint:    #6d707c;
   --on-yellow:     #17130a;
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-pill: 999px;
-
   --shadow-lift: 0 24px 48px -24px rgba(0,0,0,.65);
   --shadow-tight: 0 8px 20px -10px rgba(0,0,0,.55);
 
-  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
-
   color-scheme: dark;
+}
+
+/* Identidade do clube só aparece no painel após a escolha do time. */
+[data-team='cruzeiro'][data-theme='light'] {
+  --yellow: #0b3d91;
+  --yellow-strong: #1558b0;
+  --yellow-dim: #082e6b;
+  --yellow-glow: rgba(21, 88, 176, .13);
+  --yellow-glow-soft: rgba(21, 88, 176, .07);
+  --on-yellow: #fff;
+}
+[data-team='cruzeiro'][data-theme='dark'] {
+  --yellow: #75adff;
+  --yellow-strong: #9ac2ff;
+  --yellow-dim: #3978cc;
+  --yellow-glow: rgba(50, 115, 205, .2);
+  --yellow-glow-soft: rgba(50, 115, 205, .1);
+  --on-yellow: #07172e;
+}
+[data-team='atletico'][data-theme='light'] {
+  --yellow: #191a1d;
+  --yellow-strong: #303237;
+  --yellow-dim: #55575c;
+  --yellow-glow: rgba(18, 19, 22, .1);
+  --yellow-glow-soft: rgba(18, 19, 22, .045);
+  --on-yellow: #fff;
+}
+[data-team='atletico'][data-theme='dark'] {
+  --yellow: #f2f3f5;
+  --yellow-strong: #fff;
+  --yellow-dim: #c5c7cb;
+  --yellow-glow: rgba(255, 255, 255, .13);
+  --yellow-glow-soft: rgba(255, 255, 255, .055);
+  --on-yellow: #17181b;
 }
 
 *{ box-sizing:border-box; }
@@ -47,6 +109,20 @@ body{
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overflow-x:hidden;
+}
+html[data-team='cruzeiro'] body {
+  background:
+    radial-gradient(900px 500px at 90% 0%, rgba(25, 91, 184, .13), transparent 65%),
+    repeating-linear-gradient(135deg, transparent 0 46px, rgba(30, 91, 175, .025) 46px 49px),
+    radial-gradient(1200px 600px at 50% -10%, var(--yellow-glow-soft), transparent 60%),
+    var(--bg);
+}
+html[data-team='atletico'] body {
+  background:
+    radial-gradient(800px 500px at 5% 0%, rgba(110, 112, 118, .09), transparent 65%),
+    repeating-linear-gradient(135deg, transparent 0 52px, rgba(70, 72, 78, .025) 52px 55px),
+    radial-gradient(1200px 600px at 50% -10%, var(--yellow-glow-soft), transparent 60%),
+    var(--bg);
 }
 h1,h2,h3{ margin:0; font-family: var(--font-display); letter-spacing:.02em; }
 p{ margin:0; }
@@ -385,14 +461,6 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
   border:1px dashed var(--border-solid); border-radius:var(--radius-md); font-size:13px;
 }
 
-/* ============ ingressos ============ */
-.ticket-card{
-  background:var(--surface); border:1px solid var(--border-solid);
-  border-radius:var(--radius-lg); padding:28px 22px; text-align:center;
-}
-.ticket-icon{ width:40px; height:40px; color:var(--yellow); margin-bottom:14px; }
-.ticket-text{ font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.5; }
-
 /* ============ perfil ============ */
 .profile-card{ display:flex; align-items:center; gap:16px; margin-bottom:26px; }
 .profile-id{ display:flex; flex-direction:column; gap:2px; min-width:0; }
@@ -424,6 +492,7 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
   background:var(--bg-soft); border-top:1px solid var(--border-solid);
   padding:10px 12px calc(10px + env(safe-area-inset-bottom));
 }
+
 .nav-item{
   background:none; border:none; color:var(--text-faint);
   display:flex; flex-direction:column; align-items:center; gap:4px;
@@ -486,4 +555,248 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
   }
   .nav-item{ flex-direction:row; justify-content:flex-start; width:100%; gap:10px; font-size:13px; padding:10px 14px; }
   .nav-item.is-active{ background:var(--surface); }
+}
+
+/* ============ sub-abas de jogos ============ */
+.jogos-subtabs{ display:flex; gap:8px; margin-bottom:14px; }
+.jogos-subtab{
+  flex:1; padding:9px 0; border-radius:var(--radius-sm);
+  background:var(--surface); border:1px solid var(--border-solid);
+  color:var(--text-muted); font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+}
+.jogos-subtab.is-active{ background:var(--yellow); color:var(--on-yellow); border-color:var(--yellow); }
+
+/* ============ favoritar + avaliar ============ */
+.game-fav-btn{
+  flex-shrink:0; width:32px; height:32px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg-soft); border:1px solid var(--border-solid); color:var(--text-faint);
+}
+.game-fav-btn svg{ width:16px; height:16px; }
+.game-fav-btn.is-active{ color:var(--yellow); border-color:var(--yellow-dim); }
+.game-avaliar-btn{
+  flex-shrink:0; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  padding:6px 10px; border-radius:var(--radius-pill);
+  background:transparent; border:1px solid var(--border-solid); color:var(--text-muted);
+}
+.game-avaliar-btn.ja-avaliado{ color:var(--yellow); border-color:var(--yellow-dim); }
+
+.rating-stars{ display:flex; gap:8px; justify-content:center; margin:16px 0 18px; }
+.rating-star{ background:none; border:none; color:var(--text-faint); padding:2px; }
+.rating-star svg{ width:30px; height:30px; }
+.rating-star.is-filled{ color:var(--yellow); }
+
+#avaliacao-comentario{
+  width:100%; background:var(--bg-soft); border:1px solid var(--border-solid);
+  border-radius:var(--radius-sm); color:var(--text); padding:10px 12px; font-family:var(--font-body);
+  font-size:13px; resize:vertical; margin-top:6px;
+}
+.perfil-mini-list{ display:flex; flex-direction:column; gap:8px; }
+.perfil-mini-item{
+  display:flex; align-items:center; gap:10px;
+  background:var(--bg-soft); border:1px solid var(--border-solid);
+  border-radius:var(--radius-sm); padding:10px 12px;
+}
+.perfil-mini-info{ flex:1; min-width:0; }
+.perfil-mini-rival{ font-weight:700; font-size:13.5px; }
+.perfil-mini-meta{ font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+.perfil-mini-comentario{ font-size:11px; color:var(--text-muted); margin-top:4px; font-style:italic; }
+.perfil-mini-stars{ display:flex; gap:1px; flex-shrink:0; color:var(--yellow); }
+.perfil-mini-stars svg{ width:13px; height:13px; }
+
+/* ============ "como chegar" (rota até o estádio) ============ */
+.rota-block{
+  margin:14px 0 20px; padding:14px; background:var(--surface);
+  border:1px solid var(--border-solid); border-radius:var(--radius-sm);
+}
+.rota-modos{ display:flex; gap:8px; margin-bottom:10px; }
+.rota-modo{
+  flex:1; padding:8px 0; border-radius:var(--radius-sm);
+  background:var(--bg-soft); border:1px solid var(--border-solid);
+  color:var(--text-muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+}
+.rota-modo.is-active{ background:var(--yellow); color:var(--on-yellow); border-color:var(--yellow); }
+.rota-resultado{
+  margin-top:12px; display:flex; gap:18px; justify-content:center;
+  padding-top:12px; border-top:1px solid var(--border-solid);
+}
+.rota-resultado-item{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+.rota-resultado-valor{ font-size:20px; font-weight:800; color:var(--yellow); }
+.rota-resultado-label{ font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.03em; }
+.rota-resultado-aviso{ font-size:11px; color:var(--text-faint); text-align:center; margin-top:8px; width:100%; }
+.rota-mapa{
+  width: 100%; height: 300px; margin-top: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-solid); z-index: 1;
+}
+
+/* ============ OCUPAÇÃO PREMIUM ============ */
+.mapa-calor {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.mapa-isometrico {
+    margin: 14px 0 8px;
+}
+
+.mapa-isometrico-figura {
+    overflow: hidden;
+    border: 1px solid var(--border-solid);
+    border-radius: var(--radius-sm);
+    background: #161b22;
+    box-shadow: var(--shadow-tight);
+}
+
+.mapa-isometrico-figura svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.mapa-isometrico-titulo {
+    padding: 9px 12px;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border-solid);
+}
+
+.mapa-setor-forma {
+    transition: fill-opacity .2s ease, stroke-width .2s ease;
+}
+
+.mapa-setor-forma:hover {
+    fill-opacity: .55;
+    stroke-width: 6;
+}
+
+.mapa-assento-ocupado {
+    pointer-events: none;
+}
+
+.mapa-isometrico-legenda {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.mapa-isometrico-legenda i {
+    width: 72px;
+    height: 8px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #7393a2, #e2c34a, #e3342f);
+}
+
+.setor-bloco {
+    padding: 12px 8px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid var(--border-solid);
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    color: var(--text);
+    box-shadow: var(--shadow-tight);
+}
+
+.setor-bloco:active { transform: scale(0.95); }
+
+.setor-bloco small {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    opacity: .9;
+}
+
+.setor-verde { background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; border-color: #27ae60; }
+.setor-amarelo { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #000; border-color: #f39c12; }
+.setor-laranja { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; border-color: #d35400; }
+.setor-vermelho { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; border-color: #c0392b; }
+.setor-cinza { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: #fff; border-color: #7f8c8d; }
+
+.ocupacao-detalhes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.detalhe-item {
+    background: var(--bg-soft);
+    border: 1px solid var(--border-solid);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap:4px;
+}
+
+.detalhe-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: .05em;
+}
+
+.organizacoes-lista {
+    list-style: none;
+    padding: 0;
+    margin: 2px 0 0;
+    display: grid;
+    gap: 10px;
+}
+
+.organizacoes-referencias { color: var(--text); }
+
+.organizacao-item {
+    display: grid;
+    gap: 3px;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.organizacao-contexto,
+.organizacoes-aviso {
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.organizacoes-aviso { margin: 10px 0 0; }
+
+.ocupacao-aviso-setores {
+    margin: -8px 0 16px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.detalhe-item span:last-child {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.estadio-banner {
+    width: 100%;
+    height: 180px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-solid);
+    box-shadow: var(--shadow-tight);
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

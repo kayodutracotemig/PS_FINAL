@@ -20,4 +20,4 @@ class ComprarIngressoService:
         if not link:
             raise ValueError('Não há link de ingressos disponível para o seu time.')
 
-        return link
+        return link

@@ -44,4 +44,4 @@ class Usuario(db.Model):
 
     @staticmethod
     def buscar_por_token(token):
-        return Usuario.query.filter_by(token=token).first()
+        return Usuario.query.filter_by(token=token).first()

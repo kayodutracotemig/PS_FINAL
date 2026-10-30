@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services.comprar_ingresso_service import ComprarIngressoService
 from services.proximos_jogos_service import ProximosJogosService
+from services.listar_jogos_passados_service import ListarJogosPassadosService
 
 ingresso_bp = Blueprint('ingresso', __name__)
 
@@ -33,3 +34,17 @@ def proximos_jogos():
         return jsonify(jogos), 200
     except ValueError as erro:
         return jsonify({'erro': str(erro)}), 400
+
+
+
+@ingresso_bp.route('/jogos/passados', methods=['GET'])
+def jogos_passados():
+    token = request.headers.get('Authorization')
+    if not token:
+        return jsonify({'erro': 'Token é obrigatório.'}), 400
+    try:
+        service = ListarJogosPassadosService()
+        jogos = service.executar(token)
+        return jsonify(jogos), 200
+    except ValueError as erro:
+        return jsonify({'erro': str(erro)}), 400
