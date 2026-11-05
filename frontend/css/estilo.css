@@ -610,6 +610,7 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
   border:1px solid var(--border-solid); border-radius:var(--radius-sm);
 }
 .rota-modos{ display:flex; gap:8px; margin-bottom:10px; }
+.rota-origem-aviso{ margin:0 0 10px; color:var(--text-muted); font-size:11px; text-align:center; }
 .rota-modo{
   flex:1; padding:8px 0; border-radius:var(--radius-sm);
   background:var(--bg-soft); border:1px solid var(--border-solid);
@@ -617,16 +618,12 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; st
 }
 .rota-modo.is-active{ background:var(--yellow); color:var(--on-yellow); border-color:var(--yellow); }
 .rota-resultado{
-  margin-top:12px; display:flex; gap:18px; justify-content:center;
+  margin-top:12px; display:flex; flex-direction:column; align-items:stretch; gap:10px;
   padding-top:12px; border-top:1px solid var(--border-solid);
 }
-.rota-resultado-item{ display:flex; flex-direction:column; align-items:center; gap:2px; }
-.rota-resultado-valor{ font-size:20px; font-weight:800; color:var(--yellow); }
+.rota-resultado-item{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-width:0; }
+.rota-resultado-valor{ font-size:14px; font-weight:700; color:var(--text); overflow-wrap:anywhere; }
 .rota-resultado-label{ font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.03em; }
-.rota-resultado-aviso{ font-size:11px; color:var(--text-faint); text-align:center; margin-top:8px; width:100%; }
-.rota-mapa{
-  width: 100%; height: 300px; margin-top: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-solid); z-index: 1;
-}
 
 /* ============ OCUPAÇÃO PREMIUM ============ */
 .mapa-calor {

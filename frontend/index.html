@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/estilo.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -205,15 +204,14 @@
                 <div class="rota-modos">
                   <button class="rota-modo is-active" data-modo="driving" type="button">Carro</button>
                   <button class="rota-modo" data-modo="transit" type="button">Ônibus/Metrô</button>
-                  <button class="rota-modo" data-modo="ride" type="button">Uber/99</button>
                 </div>
+                <p class="rota-origem-aviso">A rota usa o endereço cadastrado no seu perfil como origem.</p>
                 <button id="btn-como-chegar" class="btn btn-ghost" type="button" style="width:100%">
                   <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.5-9.3 9-9.3 9Z"/></svg>
                   <span class="btn-label">Calcular Melhor Rota</span>
                   <span class="btn-spinner" hidden></span>
                 </button>
                 <div id="rota-resultado" class="rota-resultado hidden"></div>
-                <div id="rota-mapa" class="rota-mapa hidden"></div>
         </div>
       </div>
 
@@ -349,7 +347,6 @@
     </div>
   </div>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -53,8 +53,8 @@ Configuração opcional: copie `backend/.env.example` para `backend/.env`. Sem e
 11. **Favoritar jogo**
 12. **Avaliar jogo antigo** (1 a 5 estrelas + comentário)
 13. **Modo claro/escuro**
-14. **Guia para locomoção até o estádio** (distância e tempo via OSRM + mapa Leaflet)
-15. **Guia para transporte público** *(parcial)*: o app abre a rota no Google Maps em modo transporte público; o tempo mostrado no app é estimado pela rota de carro
+14. **Guia para locomoção até o estádio** (abre a rota no Google Maps usando o endereço salvo no perfil)
+15. **Modos de rota**: carro ou ônibus/metrô, calculados pelo Google Maps
 16. **Previsão de público** (média de temporada, fatores de contexto e cenários baixo/central/alto)
 17. **Previsão de ocupação por setor** (percentual e público estimado a partir das faixas históricas informadas e do contexto da partida)
 18. **Mapa isométrico de ocupação** da Arena MRV e do Mineirão, com densidade visual por setor para o jogo selecionado

@@ -21,7 +21,6 @@
     avaliando: null,        // jogo que está sendo avaliado no modal
     nota: 0,
     timer: null,            // setInterval da contagem regressiva
-    mapa: null,             // instância do Leaflet
   };
 
   // atalho: $('id') = document.getElementById('id')
@@ -180,7 +179,6 @@
     state.token = null;
     state.usuario = null;
     clearInterval(state.timer);
-    if (state.mapa) { state.mapa.remove(); state.mapa = null; }
   }
 
   // Decide qual tela mostrar assim que o app abre
@@ -698,71 +696,39 @@
     img.alt = `Foto do ${e.nome}`;
   }
 
-  // geolocation usa callbacks; embrulhamos numa Promise para poder usar await
-  function obterPosicao() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) { reject(new Error('Seu navegador não tem geolocalização.')); return; }
-      navigator.geolocation.getCurrentPosition(resolve, () => reject(new Error('geo')), { timeout: 10000 });
-    });
-  }
-
   async function calcularRota() {
     const botao = $('btn-como-chegar');
+    const resultado = $('rota-resultado');
+    resultado.replaceChildren();
+    resultado.classList.add('hidden');
     ocupado(botao, true);
     try {
-      let pos;
-      try { pos = await obterPosicao(); }
-      catch (e) {
-        // sem permissão de localização: abre o estádio no Google Maps como alternativa
-        toast('Não consegui sua localização. Abrindo o estádio no Google Maps.', 'error');
-        window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(estadioDoTime().nome)}`, '_blank', 'noopener');
-        return;
-      }
-      const { latitude, longitude } = pos.coords;
-      const r = await api('/rota', { method: 'POST', body: { latitude, longitude, modo: state.modo } });
-      mostrarRota(r, latitude, longitude);
-    } catch (e) { toast(e.message, 'error'); }
+      const r = await api('/rota', { method: 'POST', body: { modo: state.modo } });
+      mostrarRota(r);
+    } catch (e) {
+      toast(e.message, 'error');
+      if (e.message.toLowerCase().includes('endereço')) irParaAba('perfil');
+    }
     finally { ocupado(botao, false); }
   }
 
-  function mostrarRota(r, lat, lon) {
+  function mostrarRota(r) {
     const box = $('rota-resultado');
     box.replaceChildren();
     box.classList.remove('hidden');
 
-    [[`${r.distancia_km} km`, 'distância'], [`${r.duracao_min} min`, 'tempo (carro)'], [r.estadio_nome, 'destino']].forEach(([v, l]) => {
+    const modo = r.modo === 'transit' ? 'Ônibus/Metrô' : 'Carro';
+    [[r.origem, 'origem cadastrada'], [r.estadio_nome, 'destino'], [modo, 'modo de transporte']].forEach(([v, l]) => {
       const item = el('div', 'rota-resultado-item');
       item.append(el('span', 'rota-resultado-valor', v), el('span', 'rota-resultado-label', l));
       box.append(item);
     });
 
-    if (state.modo !== 'driving') {
-      box.append(el('div', 'rota-resultado-aviso', 'Distância e tempo são estimados pela rota de carro. Para horários reais de ônibus/metrô, use o botão abaixo.'));
-    }
-    // Google Maps tem transporte público de verdade
-    const gm = { driving: 'driving', transit: 'transit', ride: 'driving' }[state.modo];
     const link = el('a', 'link-btn', 'Abrir rota no Google Maps');
-    const destinoGoogle = estadioDoTime().nome;
-    link.href = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lon}&destination=${encodeURIComponent(destinoGoogle)}&travelmode=${gm}`;
+    link.href = r.link;
     link.target = '_blank';
     link.rel = 'noopener';
     box.append(link);
-
-    desenharMapa(lat, lon, r);
-  }
-
-  function desenharMapa(lat, lon, r) {
-    const div = $('rota-mapa');
-    div.classList.remove('hidden');          // o Leaflet precisa da div visível para medir o tamanho
-    if (!window.L) return;                    // Leaflet não carregou (sem internet): segue sem mapa
-    try {
-      if (state.mapa) state.mapa.remove();
-      state.mapa = L.map(div);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(state.mapa);
-      L.marker([lat, lon]).addTo(state.mapa).bindPopup('Você');
-      L.marker([r.dest_lat, r.dest_lon]).addTo(state.mapa).bindPopup(r.estadio_nome);
-      state.mapa.fitBounds([[lat, lon], [r.dest_lat, r.dest_lon]], { padding: [30, 30] });
-    } catch (e) { console.error('Mapa:', e); }
   }
 
   /* ---------- aba Perfil ---------- */
@@ -855,7 +821,8 @@
     const botao = e.target.querySelector('button[type="submit"]');
     ocupado(botao, true);
     try {
-      await api('/perfil/localizacao', { method: 'PUT', body: { token: state.token, ...dados } });
+      const resposta = await api('/perfil/localizacao', { method: 'PUT', body: { token: state.token, ...dados } });
+      if (state.usuario) state.usuario.endereco = resposta.endereco;
       toast('Endereço salvo!');
     } catch (err) { toast(err.message, 'error'); }
     finally { ocupado(botao, false); }
