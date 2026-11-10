@@ -2,9 +2,6 @@
 backend/venv/
 venv/
 
-# variáveis sensíveis
-.env
-*.env
 
 # cache do Python
 __pycache__/
@@ -21,7 +18,3 @@ backend/static/fotos/*
 # sistema
 .DS_Store
 Thumbs.db
-
-readme.md
-
-correcoes.md

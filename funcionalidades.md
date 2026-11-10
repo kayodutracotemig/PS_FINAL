@@ -16,8 +16,20 @@
 16. **Previsão de público** (média de temporada, fatores de contexto e cenários baixo/central/alto)
 17. **Previsão de ocupação por setor** (percentual e público estimado a partir das faixas históricas informadas e do contexto da partida)
 18. **Mapa isométrico de ocupação** da Arena MRV e do Mineirão, com densidade visual por setor para o jogo selecionado
-19. **Sincronização dos jogos do Brasileirão** (football-data.org; executada por comando)
-20. **Cadastro manual** de jogos da Copa do Brasil e da Sul-Americana
-21. **Referências de setores de torcidas organizadas** na Arena MRV e no Mineirão, com aviso para confirmar o mapa do evento
-22. **Tema do clube** após a seleção: azul e branco para o Cruzeiro, preto e branco para o Atlético; cadastro e seleção de time permanecem neutros
-23.**Mapa 3D do estadio com marcas de ocupação**
+19. **Referências de setores de torcidas organizadas** na Arena MRV e no Mineirão, com aviso para confirmar o mapa do evento
+20. **Tema do clube** após a seleção: azul e branco para o Cruzeiro, preto e branco para o Atlético; cadastro e seleção de time permanecem neutros
+21. **Alerta de torcidas organizadas**
+22.**Recomendação de ingresso**
+
+
+
+funcionalidades para apresentar no vídeo:
+-**Próximos jogos**
+**Compra de ingresso**
+**Guia para locomoção até o estádio** 
+**Previsão de público**
+**Previsão de ocupação por setor**
+ **Alerta de torcidas organizadas**
+**Recomendação de ingresso**
+ **Tema do clube**
+**Modo claro/escuro**

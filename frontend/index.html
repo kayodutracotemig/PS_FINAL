@@ -144,18 +144,32 @@
 
         <div id="ocupacao-home-container" class="settings-block">
             <h3 class="settings-title">Previsão de Ocupação</h3>
-            <div id="ocupacao-home-stats" class="tab-title" style="font-size: 16px; margin-bottom: 10px;">Carregando previsão...</div>
-            <div id="ocupacao-home-mapa3d" class="mapa-isometrico"></div>
-            <div id="ocupacao-home-grid" class="mapa-calor"></div>
-            <p id="ocupacao-home-aviso-setores" class="ocupacao-aviso-setores"></p>
-            <div id="ocupacao-home-detalhes" class="ocupacao-detalhes-grid">
+            <button class="btn btn-secondary btn-block ocupacao-previsao-toggle" type="button" aria-controls="ocupacao-home-overview" aria-expanded="false"><span class="ocupacao-previsao-icone">▤</span><span class="btn-label">Ver previsão de ocupação</span><span class="ocupacao-previsao-seta">⌄</span></button>
+            <div id="ocupacao-home-overview" class="hidden">
+                <div id="ocupacao-home-stats" class="ocupacao-resumo" aria-live="polite">Carregando previsão...</div>
+                <button class="btn btn-ghost btn-block ocupacao-reveal-btn" type="button" aria-controls="ocupacao-home-visualizacao" data-reveal-label="Simular ocupação" data-loading-label="Simulando ocupação">
+                    <span class="btn-label">Simular ocupação</span><span class="btn-spinner" hidden></span>
+                </button>
+            </div>
+            <div id="ocupacao-home-visualizacao" class="hidden">
+                <div id="ocupacao-home-mapa3d" class="mapa-isometrico"></div>
+                <div id="ocupacao-home-grid" class="mapa-calor"></div>
+                <p id="ocupacao-home-aviso-setores" class="ocupacao-aviso-setores"></p>
+            </div>
+            <div class="ocupacao-detalhes-grid ocupacao-recomendacoes">
                 <div class="detalhe-item">
                     <span class="detalhe-label">🚩 Setores de referência das organizadas:</span>
-                    <div id="detalhe-organizada" class="organizacoes-referencias">—</div>
+                    <button class="btn btn-ghost btn-block ocupacao-reveal-btn" type="button" aria-controls="detalhe-organizada" data-reveal-label="Saber onde ficarão as organizadas" data-loading-label="Pesquisando torcidas">
+                        <span class="btn-label">Saber onde ficarão as organizadas</span><span class="btn-spinner" hidden></span>
+                    </button>
+                    <div id="detalhe-organizada" class="organizacoes-referencias hidden">—</div>
                 </div>
                 <div class="detalhe-item">
-                    <span class="detalhe-label">✅ Recomendado:</span>
-                    <span id="detalhe-recomendado">—</span>
+                    <span class="detalhe-label">✅ Ingresso recomendado:</span>
+                    <button class="btn btn-ghost btn-block ocupacao-reveal-btn" type="button" aria-controls="detalhe-recomendado" data-reveal-label="Recomendar ingresso" data-loading-label="Achando melhor ingresso">
+                        <span class="btn-label">Recomendar ingresso</span><span class="btn-spinner" hidden></span>
+                    </button>
+                    <div id="detalhe-recomendado" class="hidden">—</div>
                 </div>
             </div>
         </div>
@@ -177,18 +191,32 @@
         <div id="lista-jogos" class="games-list"></div>
         <div id="detalhe-jogo-ocupacao" class="settings-block hidden">
             <h3 class="settings-title">Previsão de Ocupação</h3>
-            <div id="ocupacao-jogo-stats" class="tab-title" style="font-size: 16px; margin-bottom: 10px;">Carregando...</div>
-            <div id="ocupacao-jogo-mapa3d" class="mapa-isometrico"></div>
-            <div id="ocupacao-jogo-grid" class="mapa-calor"></div>
-            <p id="ocupacao-jogo-aviso-setores" class="ocupacao-aviso-setores"></p>
-            <div id="ocupacao-jogo-detalhes" class="ocupacao-detalhes-grid">
+            <button class="btn btn-secondary btn-block ocupacao-previsao-toggle" type="button" aria-controls="ocupacao-jogo-overview" aria-expanded="false"><span class="ocupacao-previsao-icone">▤</span><span class="btn-label">Ver previsão de ocupação</span><span class="ocupacao-previsao-seta">⌄</span></button>
+            <div id="ocupacao-jogo-overview" class="hidden">
+                <div id="ocupacao-jogo-stats" class="ocupacao-resumo" aria-live="polite">Carregando...</div>
+                <button class="btn btn-ghost btn-block ocupacao-reveal-btn" type="button" aria-controls="ocupacao-jogo-visualizacao" data-reveal-label="Simular ocupação" data-loading-label="Simulando ocupação">
+                    <span class="btn-label">Simular ocupação</span><span class="btn-spinner" hidden></span>
+                </button>
+            </div>
+            <div id="ocupacao-jogo-visualizacao" class="hidden">
+                <div id="ocupacao-jogo-mapa3d" class="mapa-isometrico"></div>
+                <div id="ocupacao-jogo-grid" class="mapa-calor"></div>
+                <p id="ocupacao-jogo-aviso-setores" class="ocupacao-aviso-setores"></p>
+            </div>
+            <div class="ocupacao-detalhes-grid ocupacao-recomendacoes">
                 <div class="detalhe-item">
                     <span class="detalhe-label">🚩 Setores de referência das organizadas:</span>
-                    <div id="detalhe-jogo-organizada" class="organizacoes-referencias">—</div>
+                    <button class="btn btn-ghost btn-block ocupacao-reveal-btn" type="button" aria-controls="detalhe-jogo-organizada" data-reveal-label="Saber onde ficarão as organizadas" data-loading-label="Pesquisando torcidas">
+                        <span class="btn-label">Saber onde ficarão as organizadas</span><span class="btn-spinner" hidden></span>
+                    </button>
+                    <div id="detalhe-jogo-organizada" class="organizacoes-referencias hidden">—</div>
                 </div>
                 <div class="detalhe-item">
-                    <span class="detalhe-label">✅ Recomendado:</span>
-                    <span id="detalhe-jogo-recomendado">—</span>
+                    <span class="detalhe-label">✅ Ingresso recomendado:</span>
+                    <button class="btn btn-ghost btn-block ocupacao-reveal-btn" type="button" aria-controls="detalhe-jogo-recomendado" data-reveal-label="Recomendar ingresso" data-loading-label="Achando melhor ingresso">
+                        <span class="btn-label">Recomendar ingresso</span><span class="btn-spinner" hidden></span>
+                    </button>
+                    <div id="detalhe-jogo-recomendado" class="hidden">—</div>
                 </div>
             </div>
         </div>

@@ -363,22 +363,33 @@
   function renderOrganizadas(container, grupos, aviso) {
     container.replaceChildren();
     if (!grupos || !grupos.length) {
-      container.textContent = 'Sem referência cadastrada.';
+      const vazio = el('div', 'organizacoes-vazio');
+      vazio.append(el('span', 'organizacoes-vazio-icone', 'i'), el('span', '', 'Nenhuma referência cadastrada para este estádio.'));
+      container.append(vazio);
       return;
     }
 
     const lista = el('ul', 'organizacoes-lista');
-    grupos.forEach((grupo) => {
+    grupos.forEach((grupo, indice) => {
       const item = el('li', 'organizacao-item');
-      const titulo = el('strong', '', `${grupo.nome} — ${grupo.setor}`);
-      const contexto = el('span', 'organizacao-contexto', grupo.contexto);
-      item.append(titulo, contexto);
+      const ordem = el('span', 'organizacao-ordem', String(indice + 1).padStart(2, '0'));
+      const info = el('div', 'organizacao-info');
+      const cabecalho = el('div', 'organizacao-cabecalho');
+      cabecalho.append(el('strong', 'organizacao-nome', grupo.nome), el('span', 'organizacao-setor', grupo.setor));
+      info.append(cabecalho, el('span', 'organizacao-contexto', grupo.contexto));
+      item.append(ordem, info);
       lista.append(item);
     });
     container.append(lista);
-    if (aviso) container.append(el('p', 'organizacoes-aviso', aviso));
+    if (aviso) {
+      const alerta = el('div', 'organizacoes-aviso');
+      alerta.append(el('span', 'organizacoes-aviso-icone', '!'));
+      const texto = el('div', '');
+      texto.append(el('strong', '', 'Referência para se orientar'), el('p', '', aviso));
+      alerta.append(texto);
+      container.append(alerta);
+    }
   }
-
   const mapasIsometricos = {
     mineirao: {
       imagem: 'img/mapa-mineirao-setores.png',
@@ -505,14 +516,111 @@
     container.replaceChildren(mapa, legenda);
   }
 
+  function resetarRevelacao(id) {
+    const alvo = $(id);
+    if (!alvo) return;
+    alvo.classList.add('hidden');
+    const botao = document.querySelector(`.ocupacao-reveal-btn[aria-controls="${id}"]`)
+      || document.querySelector(`.ocupacao-previsao-toggle[aria-controls="${id}"]`);
+    if (!botao) return;
+    botao.classList.remove('hidden');
+    botao.classList.remove('is-open');
+    botao.setAttribute('aria-expanded', 'false');
+    botao.disabled = false;
+    botao.removeAttribute('aria-busy');
+    const rotulo = botao.querySelector('.btn-label');
+    if (rotulo) rotulo.textContent = botao.dataset.revealLabel || 'Ver previsão de ocupação';
+    const spinner = botao.querySelector('.btn-spinner');
+    if (spinner) spinner.hidden = true;
+  }
+
+  function renderResumoOcupacao(container, jogo, previsao) {
+    container.replaceChildren();
+    const cabecalho = el('div', 'ocupacao-resumo-topo');
+    const contexto = el('div', 'ocupacao-resumo-contexto');
+    contexto.append(el('span', 'ocupacao-resumo-label', 'Público previsto'), el('strong', '', `vs ${jogo.adversario} · ${previsao.estadio}`));
+    cabecalho.append(contexto, el('span', `ocupacao-confianca confianca-${previsao.confianca || 'media'}`, `Confiança ${previsao.confianca || 'média'}`));
+    const principal = el('div', 'ocupacao-resumo-principal');
+    const publico = el('strong', 'ocupacao-publico', '');
+    const ocupacao = el('span', 'ocupacao-percentual', '');
+    principal.append(publico, ocupacao);
+    const trilho = el('div', 'ocupacao-trilho');
+    trilho.setAttribute('role', 'meter');
+    trilho.setAttribute('aria-label', 'Ocupação prevista do estádio');
+    trilho.setAttribute('aria-valuemin', '0'); trilho.setAttribute('aria-valuemax', '100');
+    const progresso = el('span', 'ocupacao-progresso'); trilho.append(progresso);
+    const controle = el('div', 'ocupacao-cenarios hidden');
+    controle.id = container.id + '-cenarios';
+    controle.append(el('span', 'ocupacao-cenarios-label', 'Selecione um cenário para atualizar a estimativa'));
+    const abrirCenarios = el('button', 'ocupacao-cenarios-toggle', '');
+    abrirCenarios.type = 'button';
+    abrirCenarios.setAttribute('aria-controls', controle.id);
+    abrirCenarios.setAttribute('aria-expanded', 'false');
+    abrirCenarios.append(
+      el('span', 'ocupacao-cenarios-toggle-icone', '↕'),
+      el('span', 'ocupacao-cenarios-toggle-texto', 'Comparar cenários'),
+      el('span', 'ocupacao-cenarios-toggle-opcoes', 'Baixo · Central · Alto'),
+    );
+    abrirCenarios.onclick = () => {
+      const aberto = controle.classList.toggle('hidden') === false;
+      abrirCenarios.setAttribute('aria-expanded', String(aberto));
+      abrirCenarios.classList.toggle('is-open', aberto);
+    };
+    const botoes = el('div', 'ocupacao-cenarios-opcoes');
+    [['baixo', 'Baixo'], ['central', 'Central'], ['alto', 'Alto']].forEach(([chave, titulo]) => {
+      const cenario = previsao.cenarios[chave]; if (!cenario) return;
+      const botao = el('button', 'ocupacao-cenario', ''); botao.type = 'button';
+      botao.setAttribute('aria-pressed', String(chave === 'central'));
+      botao.append(el('span', 'ocupacao-cenario-titulo', titulo), el('strong', 'ocupacao-cenario-valor', `~${cenario.publico.toLocaleString('pt-BR')}`));
+      botao.onclick = () => {
+        botoes.querySelectorAll('.ocupacao-cenario').forEach((item) => {
+          const ativo = item === botao; item.classList.toggle('is-active', ativo); item.setAttribute('aria-pressed', String(ativo));
+        });
+        publico.textContent = `~${cenario.publico.toLocaleString('pt-BR')}`;
+        ocupacao.textContent = `${cenario.ocupacao_percent}% da capacidade`;
+        progresso.style.width = `${Math.max(0, Math.min(100, cenario.ocupacao_percent))}%`;
+        trilho.setAttribute('aria-valuenow', String(cenario.ocupacao_percent));
+      };
+      if (chave === 'central') botao.classList.add('is-active');
+      botoes.append(botao);
+    });
+    controle.append(botoes);
+    const metodologia = document.createElement('details'); metodologia.className = 'ocupacao-metodologia';
+    const resumo = document.createElement('summary'); resumo.textContent = 'Como essa previsão é calculada?';
+    metodologia.append(resumo, el('p', '', previsao.metodologia || 'Estimativa baseada nas faixas históricas e no contexto da partida.'));
+    container.append(cabecalho, principal, trilho, abrirCenarios, controle, metodologia);
+    const central = previsao.cenarios.central || { publico: previsao.publico_previsto, ocupacao_percent: previsao.ocupacao_geral };
+    publico.textContent = `~${central.publico.toLocaleString('pt-BR')}`;
+    ocupacao.textContent = `${central.ocupacao_percent}% da capacidade`;
+    progresso.style.width = `${Math.max(0, Math.min(100, central.ocupacao_percent))}%`;
+    trilho.setAttribute('aria-valuenow', String(central.ocupacao_percent));
+  }
+
   async function carregarOcupacao(jogo, statsId, gridId, orgId, recId, noteId, mapaId) {
     const stats = $(statsId), grid = $(gridId);
+    const overviewId = statsId.replace('-stats', '-overview');
+    resetarRevelacao(overviewId);
     grid.replaceChildren();
-    if (mapaId) $(mapaId).replaceChildren();
+    if (mapaId) {
+      $(mapaId).replaceChildren();
+      resetarRevelacao(mapaId.replace('-mapa3d', '-visualizacao'));
+    }
+    resetarRevelacao(orgId);
+    resetarRevelacao(recId);
     $(orgId).textContent = '—';
     $(recId).textContent = '—';
     if (noteId) $(noteId).textContent = '';
-    if (!jogo) { stats.textContent = 'Sem jogos em casa por enquanto.'; return; }
+    if (!jogo) {
+      $(overviewId).classList.remove('hidden');
+      stats.textContent = 'Sem jogos em casa por enquanto.';
+      const botaoPrevisao = document.querySelector(`.ocupacao-previsao-toggle[aria-controls="${overviewId}"]`);
+      if (botaoPrevisao) botaoPrevisao.classList.add('hidden');
+      if (mapaId) {
+        const botaoMapa = document.querySelector(`.ocupacao-reveal-btn[aria-controls="${mapaId.replace('-mapa3d', '-visualizacao')}"]`);
+        if (botaoMapa) botaoMapa.classList.add('hidden');
+      }
+      return;
+    }
 
     stats.textContent = 'Calculando previsão…';
     try {
@@ -525,10 +633,7 @@
           data_hora: jogo.data_hora,
         },
       });
-      const baixo = p.cenarios.baixo.publico.toLocaleString('pt-BR');
-      const alto = p.cenarios.alto.publico.toLocaleString('pt-BR');
-      stats.textContent = `vs ${jogo.adversario}: ~${p.publico_previsto.toLocaleString('pt-BR')} pessoas (faixa ${baixo}–${alto}; ${p.ocupacao_geral}% da capacidade usada)`;
-      stats.title = p.metodologia || '';
+      renderResumoOcupacao(stats, jogo, p);
       renderMapaIsometrico($(mapaId), p.estadio === 'Mineirão' ? 'mineirao' : 'arena_mrv', p.setores);
       p.setores.forEach((s) => {
         const bloco = el('div', `setor-bloco setor-${s.cor || 'cinza'}`);
@@ -541,9 +646,40 @@
       if (noteId) $(noteId).textContent = p.aviso_setores || '';
       renderOrganizadas($(orgId), p.torcidas_organizadas, p.aviso_organizacao);
       const recomendacao = p.setor_recomendado;
-      $(recId).textContent = recomendacao
-        ? `${recomendacao.setor} — ${recomendacao.pontuacao}/100. ${recomendacao.motivo}`
-        : 'Não foi possível recomendar um setor para este jogo.';
+      const caixaRecomendacao = $(recId);
+      caixaRecomendacao.replaceChildren();
+      if (!recomendacao) {
+        caixaRecomendacao.append(el('p', 'recomendacao-indisponivel', 'Não foi possível recomendar um setor para este jogo.'));
+      } else {
+        const nota = Math.max(0, Math.min(100, Number(recomendacao.pontuacao) || 0));
+        const cartao = el('div', 'recomendacao-cartao');
+        const topo = el('div', 'recomendacao-topo');
+        const identificacao = el('div', 'recomendacao-identificacao');
+        identificacao.append(el('span', 'recomendacao-sobretitulo', 'MELHOR EQUILÍBRIO'), el('strong', 'recomendacao-setor', recomendacao.setor));
+        const seloNota = el('div', 'recomendacao-nota');
+        seloNota.append(el('strong', '', nota.toLocaleString('pt-BR', { maximumFractionDigits: 1 })), el('span', '', '/ 100'));
+        topo.append(identificacao, seloNota);
+        const trilho = el('div', 'recomendacao-trilho');
+        trilho.setAttribute('role', 'meter');
+        trilho.setAttribute('aria-label', 'Pontuação do ingresso recomendado');
+        trilho.setAttribute('aria-valuemin', '0');
+        trilho.setAttribute('aria-valuemax', '100');
+        trilho.setAttribute('aria-valuenow', String(nota));
+        const progresso = el('span', 'recomendacao-progresso');
+        progresso.style.width = `${nota}%`;
+        trilho.append(progresso);
+        const metricas = el('div', 'recomendacao-metricas');
+        const ocupacao = el('div', 'recomendacao-metrica');
+        ocupacao.append(el('span', '', 'Ocupação prevista'), el('strong', '', `${recomendacao.ocupacao_prevista_percent}%`));
+        const precoTexto = recomendacao.preco_estimado
+          ? 'Faixa estimada'
+          : (recomendacao.preco_medio == null ? 'Preço informado' : Number(recomendacao.preco_medio).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+        const preco = el('div', 'recomendacao-metrica');
+        preco.append(el('span', '', 'Referência de preço'), el('strong', '', precoTexto));
+        metricas.append(ocupacao, preco);
+        cartao.append(topo, trilho, metricas, el('p', 'recomendacao-motivo', recomendacao.motivo));
+        caixaRecomendacao.append(cartao);
+      }
     } catch (e) {
       stats.textContent = 'Previsão indisponível no momento';
     }
@@ -701,15 +837,20 @@
     const resultado = $('rota-resultado');
     resultado.replaceChildren();
     resultado.classList.add('hidden');
+    botao.querySelector('.btn-label').textContent = 'Calculando melhor rota…';
     ocupado(botao, true);
     try {
       const r = await api('/rota', { method: 'POST', body: { modo: state.modo } });
+      await new Promise((resolve) => setTimeout(resolve, 700));
       mostrarRota(r);
     } catch (e) {
       toast(e.message, 'error');
       if (e.message.toLowerCase().includes('endereço')) irParaAba('perfil');
     }
-    finally { ocupado(botao, false); }
+    finally {
+      ocupado(botao, false);
+      botao.querySelector('.btn-label').textContent = 'Calcular Melhor Rota';
+    }
   }
 
   function mostrarRota(r) {
@@ -717,20 +858,28 @@
     box.replaceChildren();
     box.classList.remove('hidden');
 
-    const modo = r.modo === 'transit' ? 'Ônibus/Metrô' : 'Carro';
-    [[r.origem, 'origem cadastrada'], [r.estadio_nome, 'destino'], [modo, 'modo de transporte']].forEach(([v, l]) => {
-      const item = el('div', 'rota-resultado-item');
-      item.append(el('span', 'rota-resultado-valor', v), el('span', 'rota-resultado-label', l));
-      box.append(item);
+    const topo = el('div', 'rota-resultado-cabecalho');
+    topo.append(el('strong', '', 'Sua rota'), el('span', 'rota-maps-selo', 'Google Maps'));
+    const etapas = el('div', 'rota-etapas');
+    [[r.origem, 'Origem cadastrada', 'O', 'rota-etapa-origem'], [r.estadio_nome, 'Estádio de destino', 'D', 'rota-etapa-destino']].forEach(([valor, rotulo, letra, classe]) => {
+      const etapa = el('div', `rota-etapa ${classe}`);
+      etapa.append(el('span', 'rota-etapa-ponto', letra));
+      const info = el('div', 'rota-etapa-info');
+      info.append(el('span', 'rota-etapa-rotulo', rotulo), el('strong', 'rota-etapa-valor', valor));
+      etapa.append(info);
+      etapas.append(etapa);
     });
 
-    const link = el('a', 'link-btn', 'Abrir rota no Google Maps');
+    const modo = r.modo === 'transit' ? 'Ônibus/Metrô' : 'Carro';
+    const rodape = el('div', 'rota-resultado-rodape');
+    rodape.append(el('span', 'rota-modo-icone', r.modo === 'transit' ? 'T' : 'C'), el('span', 'rota-modo-texto', `Trajeto de ${modo}`));
+    const link = el('a', 'btn btn-primary btn-block rota-maps-link', 'Abrir rota no Google Maps');
     link.href = r.link;
     link.target = '_blank';
     link.rel = 'noopener';
-    box.append(link);
+    link.append(el('span', 'rota-maps-seta', '↗'));
+    box.append(topo, etapas, rodape, link);
   }
-
   /* ---------- aba Perfil ---------- */
 
   function itemMini(titulo, meta, extra) {
@@ -847,6 +996,31 @@
     });
 
     $('btn-comprar-ingresso').onclick = comprarIngresso;
+
+    document.querySelectorAll('.ocupacao-reveal-btn').forEach((botao) => {
+      botao.onclick = async () => {
+        const alvo = document.getElementById(botao.getAttribute('aria-controls'));
+        if (!alvo || botao.disabled) return;
+        botao.disabled = true;
+        botao.setAttribute('aria-busy', 'true');
+        botao.querySelector('.btn-label').textContent = botao.dataset.loadingLabel;
+        botao.querySelector('.btn-spinner').hidden = false;
+        await new Promise((resolve) => setTimeout(resolve, 650));
+        alvo.classList.remove('hidden');
+        botao.classList.add('hidden');
+      };
+    });
+
+    document.querySelectorAll('.ocupacao-previsao-toggle').forEach((botao) => {
+      botao.onclick = () => {
+        const alvo = document.getElementById(botao.getAttribute('aria-controls'));
+        if (!alvo) return;
+        const aberto = alvo.classList.toggle('hidden') === false;
+        botao.setAttribute('aria-expanded', String(aberto));
+        botao.classList.toggle('is-open', aberto);
+        botao.querySelector('.btn-label').textContent = aberto ? 'Ocultar previsão' : 'Ver previsão de ocupação';
+      };
+    });
 
     document.querySelectorAll('.rota-modo').forEach((b) => {
       b.onclick = () => {
